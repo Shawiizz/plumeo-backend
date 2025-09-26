@@ -1,6 +1,6 @@
 package fr.shawiizz.plumeo.service;
 
-import fr.shawiizz.plumeo.dto.LoginRequest;
+import fr.shawiizz.plumeo.dto.request.LoginRequest;
 import fr.shawiizz.plumeo.entity.User;
 import fr.shawiizz.plumeo.repository.UserRepository;
 import fr.shawiizz.plumeo.util.JwtUtil;

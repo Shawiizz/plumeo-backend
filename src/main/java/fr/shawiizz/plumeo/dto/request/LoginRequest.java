@@ -1,4 +1,4 @@
-package fr.shawiizz.plumeo.dto;
+package fr.shawiizz.plumeo.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 

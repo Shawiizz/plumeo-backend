@@ -1,10 +1,9 @@
 package fr.shawiizz.plumeo.controller;
 
-import fr.shawiizz.plumeo.dto.LoginRequest;
-import fr.shawiizz.plumeo.dto.LoginResponse;
-import fr.shawiizz.plumeo.dto.RegisterRequest;
-import fr.shawiizz.plumeo.dto.RegisterResponse;
-import fr.shawiizz.plumeo.entity.User;
+import fr.shawiizz.plumeo.dto.request.LoginRequest;
+import fr.shawiizz.plumeo.dto.response.AuthResponse;
+import fr.shawiizz.plumeo.dto.request.RegisterRequest;
+import fr.shawiizz.plumeo.dto.response.RegisterResponse;
 import fr.shawiizz.plumeo.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -47,19 +46,15 @@ public class SecurityController {
                     content = @Content
             )
     })
-    public RegisterResponse register(@Valid @RequestBody RegisterRequest request) {
-        User user = userService.registerUser(
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
+        userService.registerUser(
                 request.username().trim(),
                 request.email().trim(),
                 request.password()
         );
 
-        return new RegisterResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getCreatedAt()
-        );
+        String jwtToken = userService.loginUser(new LoginRequest(request.email(), request.password()));
+        return new AuthResponse(jwtToken);
     }
 
     @PostMapping("/login")
@@ -73,7 +68,7 @@ public class SecurityController {
                     description = "User authenticated successfully",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = LoginResponse.class)
+                            schema = @Schema(implementation = AuthResponse.class)
                     )
             ),
             @ApiResponse(
@@ -82,9 +77,9 @@ public class SecurityController {
                     content = @Content
             )
     })
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
         String jwtToken = userService.loginUser(request);
 
-        return new LoginResponse(jwtToken);
+        return new AuthResponse(jwtToken);
     }
 }

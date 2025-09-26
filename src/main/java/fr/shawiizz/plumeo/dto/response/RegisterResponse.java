@@ -1,4 +1,4 @@
-package fr.shawiizz.plumeo.dto;
+package fr.shawiizz.plumeo.dto.response;
 
 import java.time.Instant;
 

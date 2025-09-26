@@ -1,5 +1,6 @@
 package fr.shawiizz.plumeo.exception;
 
+import fr.shawiizz.plumeo.constant.ErrorCodes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
                 fieldErrors.put(error.getField(), error.getDefaultMessage())
         );
 
-        errorResponse.put("message", "Validation failed");
+        errorResponse.put("message", ErrorCodes.VALIDATION_FAILED);
         errorResponse.put("errors", fieldErrors);
 
         return ResponseEntity.badRequest().body(errorResponse);
@@ -46,7 +47,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
         log.warn("Authentication exception: {}", ex.getMessage());
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Authentication failed: " + ex.getMessage());
+        
+        // Map Spring Security exceptions to custom error codes
+        if (ex.getMessage().contains("Bad credentials") || ex.getMessage().contains("Les identifications sont erronées")) {
+            errorResponse.put("message", ErrorCodes.AUTH_BAD_CREDENTIALS);
+        } else if (ex.getMessage().contains("User not found")) {
+            errorResponse.put("message", ErrorCodes.AUTH_USER_NOT_FOUND);
+        } else {
+            errorResponse.put("message", ErrorCodes.AUTH_FAILED);
+        }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
@@ -55,7 +64,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
         log.warn("Access denied: {}", ex.getMessage());
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Access denied: " + ex.getMessage());
+        errorResponse.put("message", ErrorCodes.ACCESS_DENIED);
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
@@ -69,7 +78,7 @@ public class GlobalExceptionHandler {
 
         log.error("Generic exception caught: ", ex);
         Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("message", "Internal server error: " + ex.getMessage());
+        errorResponse.put("message", ErrorCodes.INTERNAL_SERVER_ERROR);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

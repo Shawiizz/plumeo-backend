@@ -1,6 +1,7 @@
 package fr.shawiizz.plumeo.aspect;
 
 import fr.shawiizz.plumeo.annotation.Authenticated;
+import fr.shawiizz.plumeo.constant.ErrorCodes;
 import fr.shawiizz.plumeo.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class AuthenticationAspect {
     public Object checkAuthentication(ProceedingJoinPoint joinPoint, Authenticated authenticated) throws Throwable {
         if (!authenticationService.isAuthenticated()) {
             log.warn("Unauthorized access attempt to protected endpoint: {}", joinPoint.getSignature().getName());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ErrorCodes.USER_NOT_AUTHENTICATED);
         }
 
         log.debug("Authenticated user accessing: {}", joinPoint.getSignature().getName());
