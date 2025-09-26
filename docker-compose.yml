@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: plumeo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: plumeo
+      POSTGRES_USER: plumeo
+      POSTGRES_PASSWORD: plumeo
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - plumeo-network
+
+volumes:
+  postgres_data:
+
+networks:
+  plumeo-network:
+    driver: bridge

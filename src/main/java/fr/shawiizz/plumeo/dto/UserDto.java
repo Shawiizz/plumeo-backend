@@ -1,8 +1,9 @@
-package fr.shawiizz.plumeo.entity;
+package fr.shawiizz.plumeo.dto;
+
+import fr.shawiizz.plumeo.entity.User;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 /**
