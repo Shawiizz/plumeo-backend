@@ -28,7 +28,7 @@ public class AuthenticationAspect {
             log.warn("Unauthorized access attempt to protected endpoint: {}", joinPoint.getSignature().getName());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
         }
-        
+
         log.debug("Authenticated user accessing: {}", joinPoint.getSignature().getName());
         return joinPoint.proceed();
     }

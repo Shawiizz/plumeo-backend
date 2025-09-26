@@ -18,13 +18,13 @@ public class User {
     @Column(nullable = false)
     private Long id;
 
-    @Column(name = "username")
+    @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @OneToMany
@@ -45,8 +45,8 @@ public class User {
     @Column(name = "account_verify_token")
     private String accountVerifyToken;
 
-    @Column(name = "language")
-    private String language;
+    @Column(name = "locale")
+    private String locale = "en_US";
 
     @Column(name = "last_login")
     private Instant lastLogin;

@@ -22,14 +22,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         Map<String, String> fieldErrors = new HashMap<>();
-        
-        ex.getBindingResult().getFieldErrors().forEach(error -> 
-            fieldErrors.put(error.getField(), error.getDefaultMessage())
+
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                fieldErrors.put(error.getField(), error.getDefaultMessage())
         );
-        
+
         errorResponse.put("message", "Validation failed");
         errorResponse.put("errors", fieldErrors);
-        
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         log.error("Runtime exception caught: ", ex);
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", ex.getMessage());
-        
+
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         log.warn("Authentication exception: {}", ex.getMessage());
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Authentication failed: " + ex.getMessage());
-        
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         log.warn("Access denied: {}", ex.getMessage());
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Access denied: " + ex.getMessage());
-        
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
@@ -66,11 +66,11 @@ public class GlobalExceptionHandler {
         if (ex instanceof AuthenticationException || ex instanceof AccessDeniedException) {
             throw ex;
         }
-        
+
         log.error("Generic exception caught: ", ex);
         Map<String, String> errorResponse = new HashMap<>();
         errorResponse.put("message", "Internal server error: " + ex.getMessage());
-        
+
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }
