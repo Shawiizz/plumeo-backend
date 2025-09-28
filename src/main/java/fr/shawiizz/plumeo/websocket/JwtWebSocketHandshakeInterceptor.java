@@ -1,6 +1,7 @@
 package fr.shawiizz.plumeo.websocket;
 
-import fr.shawiizz.plumeo.service.AuthenticationService;
+import fr.shawiizz.plumeo.entity.User;
+import fr.shawiizz.plumeo.service.UserService;
 import fr.shawiizz.plumeo.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,7 @@ import java.util.Map;
 public class JwtWebSocketHandshakeInterceptor implements HandshakeInterceptor {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
-    private final WebSocketSessionManager sessionManager;
+    private final UserService userService;
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
@@ -38,24 +38,29 @@ public class JwtWebSocketHandshakeInterceptor implements HandshakeInterceptor {
         }
 
         try {
-            // Extract username from token
-            String email = jwtUtil.extractUsername(token);
+            Long userId = jwtUtil.extractUserId(token);
             
-            // Load user details
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+            if (userId == null) {
+                log.warn("WebSocket handshake failed: Invalid JWT token format (no user ID)");
+                return false;
+            }
             
-            // Validate token
-            if (!jwtUtil.validateToken(token, userDetails)) {
-                log.warn("WebSocket handshake failed: Invalid JWT token for user: {}", email);
+            // Validate token with user ID
+            if (!jwtUtil.validateTokenWithUserId(token, userId)) {
+                log.warn("WebSocket handshake failed: Invalid JWT token for user ID: {}", userId);
                 return false;
             }
 
-            // Store user information in WebSocket session attributes
-            attributes.put("userEmail", email);
-            attributes.put("jwtToken", token);
-            attributes.put("userDetails", userDetails);
+            User user = userService.findById(userId).orElse(null);
             
-            log.info("WebSocket handshake successful for user: {}", email);
+            // Store user information in WebSocket session attributes
+            attributes.put("userId", userId);
+            attributes.put("jwtToken", token);
+            if (user != null) {
+                attributes.put("userEmail", user.getEmail());
+            }
+            
+            log.info("WebSocket handshake successful for user ID: {}", userId);
             return true;
             
         } catch (Exception e) {

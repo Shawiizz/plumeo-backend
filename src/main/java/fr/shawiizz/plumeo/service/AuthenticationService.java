@@ -19,20 +19,22 @@ public class AuthenticationService {
     private final UserRepository userRepository;
 
     /**
-     * Get the email of the currently authenticated user.
+     * Get the user ID of the currently authenticated user.
      *
-     * @return Optional containing the email if user is authenticated, empty otherwise
+     * @return Optional containing the user ID if user is authenticated, empty otherwise
      */
-    public Optional<String> getCurrentUsername() {
+    public Optional<Long> getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
 
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-                return Optional.of(userDetails.getUsername());
-            } else if (authentication.getPrincipal() instanceof String username) {
-                return Optional.of(username);
+                try {
+                    return Optional.of(Long.parseLong(userDetails.getUsername()));
+                } catch (NumberFormatException e) {
+                    return Optional.empty();
+                }
             }
         }
 
@@ -45,8 +47,8 @@ public class AuthenticationService {
      * @return Optional containing the User entity if authenticated, empty otherwise
      */
     public Optional<User> getCurrentUser() {
-        return getCurrentUsername()
-                .flatMap(userRepository::findByEmail);
+        return getCurrentUserId()
+                .flatMap(userRepository::findById);
     }
 
     /**
@@ -55,7 +57,7 @@ public class AuthenticationService {
      * @return true if user is authenticated, false otherwise
      */
     public boolean isAuthenticated() {
-        return getCurrentUsername().isPresent();
+        return getCurrentUserId().isPresent();
     }
 
     /**

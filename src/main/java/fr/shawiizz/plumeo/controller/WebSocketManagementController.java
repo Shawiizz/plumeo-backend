@@ -32,18 +32,18 @@ public class WebSocketManagementController {
     }
 
     @Operation(summary = "Check if a user has active WebSocket sessions")
-    @GetMapping("/user/{email}/status")
-    public ResponseEntity<Map<String, Object>> getUserStatus(@PathVariable String email) {
+    @GetMapping("/user/{userId}/status")
+    public ResponseEntity<Map<String, Object>> getUserStatus(@PathVariable Long userId) {
         return ResponseEntity.ok(Map.of(
-            "userEmail", email,
-            "sessionCount", sessionManager.getActiveSessionCount(email),
-            "hasActiveSessions", sessionManager.hasActiveSessions(email)
+            "userId", userId,
+            "sessionCount", sessionManager.getActiveSessionCount(userId),
+            "hasActiveSessions", sessionManager.hasActiveSessions(userId)
         ));
     }
 
-    @Operation(summary = "Get all active users")
+    @Operation(summary = "Get all active user IDs")
     @GetMapping("/users")
-    public ResponseEntity<Set<String>> getActiveUsers() {
+    public ResponseEntity<Set<Long>> getActiveUsers() {
         return ResponseEntity.ok(sessionManager.getActiveUsers());
     }
 }

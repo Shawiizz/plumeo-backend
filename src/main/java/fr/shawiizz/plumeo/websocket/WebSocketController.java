@@ -17,29 +17,8 @@ public class WebSocketController {
 
     private final WebSocketSessionManager sessionManager;
 
-    /**
-     * Handle ping messages from clients (for keep-alive or testing).
-     */
-    @MessageMapping("/ping")
-    public void handlePing(@Payload PingMessage message, SimpMessageHeaderAccessor headerAccessor) {
-        
-        String userEmail = (String) headerAccessor.getSessionAttributes().get("userEmail");
-        
-        if (userEmail == null) {
-            log.warn("Received ping from unauthenticated session");
-            return;
-        }
-        
-        log.info("Received ping from user {}: {}", userEmail, message.getMessage());
-        
-        // Simple acknowledgment - could be extended to send response back to specific client
-    }
-
-    /**
-     * Handle simple data messages from clients.
-     */
     @MessageMapping("/data")
-    public void handleData(@Payload DataMessage message, SimpMessageHeaderAccessor headerAccessor) {
+    public void handleData(@Payload String message, SimpMessageHeaderAccessor headerAccessor) {
         
         String userEmail = (String) headerAccessor.getSessionAttributes().get("userEmail");
         
@@ -48,41 +27,7 @@ public class WebSocketController {
             return;
         }
         
-        log.info("Received data from user {}: {}", userEmail, message.getData());
-        
-        // Process the data as needed - store in database, trigger business logic, etc.
+        log.info("Received data from user {}: {}", userEmail, message);
     }
 
-    // Simple DTO classes
-    
-    public static class PingMessage {
-        private String message;
-        
-        public PingMessage() {}
-        
-        public PingMessage(String message) {
-            this.message = message;
-        }
-        
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-    }
-    
-    public static class DataMessage {
-        private String data;
-        private String type;
-        
-        public DataMessage() {}
-        
-        public DataMessage(String data, String type) {
-            this.data = data;
-            this.type = type;
-        }
-        
-        public String getData() { return data; }
-        public void setData(String data) { this.data = data; }
-        
-        public String getType() { return type; }
-        public void setType(String type) { this.type = type; }
-    }
 }
