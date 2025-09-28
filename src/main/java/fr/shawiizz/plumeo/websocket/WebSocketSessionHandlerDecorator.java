@@ -25,7 +25,7 @@ public class WebSocketSessionHandlerDecorator implements WebSocketHandlerDecorat
             
             @Override
             public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-                Long userId = (Long) session.getAttributes().get("userId");
+                String userId = (String) session.getAttributes().get("userId");
                 String jwtToken = (String) session.getAttributes().get("jwtToken");
                 
                 if (userId != null && jwtToken != null) {

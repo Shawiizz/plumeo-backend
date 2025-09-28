@@ -17,10 +17,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public class WebSocketSessionManager {
 
     // Map user ID to their WebSocket sessions (a user can have multiple sessions)
-    private final Map<Long, Set<WebSocketSession>> userSessions = new ConcurrentHashMap<>();
+    private final Map<String, Set<WebSocketSession>> userSessions = new ConcurrentHashMap<>();
     
     // Map session ID to user ID for quick lookup
-    private final Map<String, Long> sessionToUser = new ConcurrentHashMap<>();
+    private final Map<String, String> sessionToUser = new ConcurrentHashMap<>();
     
     // Map session ID to JWT token
     private final Map<String, String> sessionToToken = new ConcurrentHashMap<>();
@@ -28,7 +28,7 @@ public class WebSocketSessionManager {
     /**
      * Register a new WebSocket session for a user.
      */
-    public void addSession(WebSocketSession session, Long userId, String jwtToken) {
+    public void addSession(WebSocketSession session, String userId, String jwtToken) {
         String sessionId = session.getId();
         userSessions.computeIfAbsent(userId, k -> new CopyOnWriteArraySet<>()).add(session);
         
@@ -43,7 +43,7 @@ public class WebSocketSessionManager {
      */
     public void removeSession(WebSocketSession session) {
         String sessionId = session.getId();
-        Long userId = sessionToUser.remove(sessionId);
+        String userId = sessionToUser.remove(sessionId);
         
         if (userId != null) {
             Set<WebSocketSession> sessions = userSessions.get(userId);
@@ -63,14 +63,14 @@ public class WebSocketSessionManager {
     /**
      * Get all sessions for a specific user.
      */
-    public Set<WebSocketSession> getUserSessions(Long userId) {
+    public Set<WebSocketSession> getUserSessions(String userId) {
         return userSessions.getOrDefault(userId, Set.of());
     }
 
     /**
      * Get user ID for a specific session.
      */
-    public Long getUserId(WebSocketSession session) {
+    public String getUserId(WebSocketSession session) {
         return sessionToUser.get(session.getId());
     }
 
@@ -84,7 +84,7 @@ public class WebSocketSessionManager {
     /**
      * Check if a user has active sessions.
      */
-    public boolean hasActiveSessions(Long userId) {
+    public boolean hasActiveSessions(String userId) {
         Set<WebSocketSession> sessions = userSessions.get(userId);
         return sessions != null && !sessions.isEmpty();
     }
@@ -92,7 +92,7 @@ public class WebSocketSessionManager {
     /**
      * Get the number of active sessions for a user.
      */
-    public int getActiveSessionCount(Long userId) {
+    public int getActiveSessionCount(String userId) {
         Set<WebSocketSession> sessions = userSessions.get(userId);
         return sessions != null ? sessions.size() : 0;
     }
@@ -107,7 +107,7 @@ public class WebSocketSessionManager {
     /**
      * Get all active user IDs.
      */
-    public Set<Long> getActiveUsers() {
+    public Set<String> getActiveUsers() {
         return Set.copyOf(userSessions.keySet());
     }
 }

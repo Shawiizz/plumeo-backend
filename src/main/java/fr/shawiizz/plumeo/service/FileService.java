@@ -220,8 +220,8 @@ public class FileService {
         return mimeTypes.getOrDefault(extension.toLowerCase(), "application/octet-stream");
     }
 
-    private Path createUserDirectory(Long userId) throws IOException {
-        Path userDir = Paths.get(uploadDir, "users", String.valueOf(userId));
+    private Path createUserDirectory(String userId) throws IOException {
+        Path userDir = Paths.get(uploadDir, "users", userId);
         
         if (!Files.exists(userDir)) {
             Files.createDirectories(userDir);

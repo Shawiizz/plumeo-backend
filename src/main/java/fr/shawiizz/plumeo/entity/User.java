@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -14,9 +15,8 @@ import java.util.Set;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long id;
+    private String id = UUID.randomUUID().toString();
 
     @Column(name = "username", nullable = false)
     private String username;

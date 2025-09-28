@@ -39,7 +39,7 @@ public class UserService {
         User user = findByEmail(request.email());
         
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getId().toString(), request.password())
+                new UsernamePasswordAuthenticationToken(user.getId(), request.password())
         );
 
         return jwtUtil.generateTokenWithUserId(user.getId());
@@ -50,7 +50,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("error.auth.badcredentials"));
     }
 
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(String id) {
         return userRepository.findById(id);
     }
 }

@@ -23,18 +23,15 @@ public class AuthenticationService {
      *
      * @return Optional containing the user ID if user is authenticated, empty otherwise
      */
-    public Optional<Long> getCurrentUserId() {
+    public Optional<String> getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()
                 && !"anonymousUser".equals(authentication.getPrincipal())) {
 
             if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-                try {
-                    return Optional.of(Long.parseLong(userDetails.getUsername()));
-                } catch (NumberFormatException e) {
-                    return Optional.empty();
-                }
+                String userId = userDetails.getUsername();
+                return Optional.of(userId);
             }
         }
 

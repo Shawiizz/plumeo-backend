@@ -3,7 +3,7 @@ package fr.shawiizz.plumeo.dto.response;
 import java.time.Instant;
 
 public record RegisterResponse(
-        Long id,
+        String id,
         String username,
         String email,
         Instant createdAt

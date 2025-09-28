@@ -17,7 +17,7 @@ public record FileInfoResponse(
         @JsonProperty("is_private") 
         Boolean isPrivate,
         @JsonProperty("author_id") 
-        Long authorId,
+        String authorId,
         @JsonProperty("created_at") 
         Long createdAt,
         @JsonProperty("updated_at") 

@@ -29,7 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String requestTokenHeader = request.getHeader("Authorization");
 
-        Long userId = null;
+        String userId = null;
         String jwtToken = null;
 
         // JWT Token is in the form "Bearer token"
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // Once we get the token validate it
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId.toString());
+            UserDetails userDetails = this.userDetailsService.loadUserByUsername(userId);
 
             // if token is valid configure Spring Security to manually set authentication
             if (jwtUtil.validateTokenWithUserId(jwtToken, userId)) {

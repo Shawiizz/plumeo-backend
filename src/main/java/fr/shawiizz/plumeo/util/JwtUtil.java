@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -26,13 +25,8 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public Long extractUserId(String token) {
-        String subject = extractClaim(token, Claims::getSubject);
-        try {
-            return Long.parseLong(subject);
-        } catch (NumberFormatException e) {
-            return null;
-        }
+    public String extractUserId(String token) {
+        return extractClaim(token, Claims::getSubject);
     }
 
     public Date extractExpiration(String token) {
@@ -56,9 +50,9 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateTokenWithUserId(Long userId) {
+    public String generateTokenWithUserId(String userId) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userId.toString());
+        return createToken(claims, userId);
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -71,8 +65,8 @@ public class JwtUtil {
                 .compact();
     }
 
-    public Boolean validateTokenWithUserId(String token, Long userId) {
-        final Long tokenUserId = extractUserId(token);
+    public Boolean validateTokenWithUserId(String token, String userId) {
+        final String tokenUserId = extractUserId(token);
         return (tokenUserId != null && tokenUserId.equals(userId) && !isTokenExpired(token));
     }
 }
